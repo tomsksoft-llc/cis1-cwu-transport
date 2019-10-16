@@ -14,6 +14,14 @@ queue::queue(queued_session& self)
     static_assert(limit > 0, "queue limit must be positive");
 }
 
+queue::~queue()
+{
+    for(auto& [key, handler] : close_handlers_)
+    {
+        handler();
+    }
+}
+
 void queue::send(
         boost::asio::const_buffer msg,
         std::function<void()> on_write,
@@ -46,6 +54,33 @@ bool queue::is_full()
 boost::asio::executor queue::get_executor()
 {
     return self_.strand_;
+}
+
+uint32_t queue::add_close_handler(
+        std::function<void()> on_close)
+{
+    if(close_handlers_.empty())
+    {
+        close_handlers_.insert({0, on_close});
+
+        return 0;
+    }
+    else
+    {
+        auto it = close_handlers_.end();
+        --it;
+
+        auto new_key = it->first - 1;
+        close_handlers_.insert({new_key, on_close});
+
+        return new_key;
+    }
+}
+
+void queue::remove_close_handler(
+        uint32_t id)
+{
+    close_handlers_.erase(id);
 }
 
 void queue::close()

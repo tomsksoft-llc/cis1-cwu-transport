@@ -22,7 +22,7 @@ class queue
 public:
     friend class queued_session;
     queue(queued_session& self);
-    ~queue() = default;
+    ~queue();
 
     void send_text(
             boost::asio::const_buffer buffer,
@@ -30,6 +30,13 @@ public:
     bool is_full() override;
     boost::asio::executor get_executor() override;
     void disconnect();
+
+    uint32_t add_close_handler(
+            std::function<void()> on_close) override;
+
+    void remove_close_handler(
+            uint32_t id) override;
+
     void close() override;
 
 private:
@@ -49,6 +56,8 @@ private:
     queued_session& self_;
     std::deque<message> messages_;
     uint32_t current_message_size_;
+
+    std::map<uint32_t, std::function<void()>> close_handlers_;
 
     bool on_write();
     void send();

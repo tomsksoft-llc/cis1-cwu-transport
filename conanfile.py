@@ -13,7 +13,7 @@ class Cis1CWUTransport(ConanFile):
     exports_sources = ["CMakeLists.txt", "include/*", "src/*"]
     requires = ("boost_system/1.69.0@bincrafters/stable",
                 "boost_asio/1.69.0@bincrafters/stable",
-                "cis1_proto_utils/test@tomsksoft/cis1")
+                "cis1_proto_utils/0.0.2@tomsksoft/cis1")
 
     def build(self):
         cmake = CMake(self)
