@@ -30,6 +30,7 @@ public:
     bool is_full() override;
     boost::asio::executor get_executor() override;
     void disconnect();
+    void close() override;
 
 private:
     enum

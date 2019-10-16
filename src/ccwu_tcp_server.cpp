@@ -15,12 +15,12 @@ tcp_server::tcp_server(boost::asio::io_context& io_context)
     , socket_(io_context)
 {}
 
-void tcp_server::set_message_handler(
-            std::function<void(
+void tcp_server::set_session_acceptor(
+            std::function<std::function<void(
                     boost::asio::const_buffer,
-                    std::shared_ptr<queue>)> msg_handler)
+                    std::shared_ptr<queue>)>()> acceptor)
 {
-    msg_handler_ = msg_handler;
+    session_acceptor_ = acceptor;
 }
 
 void tcp_server::listen(const tcp::endpoint& endpoint)
@@ -48,13 +48,7 @@ void tcp_server::handle_accept(const boost::system::error_code& error)
     {
         queued_session::accept_handler(
                     std::move(socket_),
-                    [&](auto&&... args)
-                    {
-                        if(msg_handler_)
-                        {
-                            msg_handler_(std::forward<decltype(args)>(args)...);
-                        }
-                    });
+                    session_acceptor_());
     }
 
     start_accept();

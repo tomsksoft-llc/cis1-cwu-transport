@@ -20,20 +20,21 @@ public:
 
     void listen(const boost::asio::ip::tcp::endpoint& endpoint);
 
-    void set_message_handler(
-            std::function<void(
+    void set_session_acceptor(
+            std::function<std::function<void(
                     boost::asio::const_buffer,
-                    std::shared_ptr<queue>)> msg_handler);
+                    std::shared_ptr<queue>)>()> acceptor);
+
 private:
+    boost::asio::ip::tcp::acceptor acceptor_;
+    boost::asio::ip::tcp::socket socket_;
+    std::function<std::function<void(
+                    boost::asio::const_buffer,
+                    std::shared_ptr<queue>)>()> session_acceptor_;
+
     void start_accept();
 
     void handle_accept(const boost::system::error_code& error);
-
-    boost::asio::ip::tcp::acceptor acceptor_;
-    boost::asio::ip::tcp::socket socket_;
-    std::function<void(
-            boost::asio::const_buffer,
-            std::shared_ptr<queue>)> msg_handler_;
 };
 
 } // namespace cwu

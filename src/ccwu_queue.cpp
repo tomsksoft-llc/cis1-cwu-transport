@@ -48,6 +48,11 @@ boost::asio::executor queue::get_executor()
     return self_.strand_;
 }
 
+void queue::close()
+{
+    disconnect();
+}
+
 bool queue::on_write()
 {
     BOOST_ASSERT(!messages_.empty());
