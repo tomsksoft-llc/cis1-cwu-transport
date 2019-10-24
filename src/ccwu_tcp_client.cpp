@@ -1,5 +1,7 @@
 #include "ccwu_tcp_client.h"
 
+#include <cis1_proto_utils/cloexec.h>
+
 #include "queued_ccwu_session.h"
 
 namespace cis1
@@ -31,6 +33,8 @@ void tcp_client::connect(
     {
         return;
     }
+
+    cis1::proto_utils::set_cloexec(socket_, ec);
 
     session_ = queued_session::accept_handler(
             std::move(socket_),

@@ -4,7 +4,7 @@ from conans import CMake
 
 class Cis1CWUTransport(ConanFile):
     name = "cis1_cwu_transport"
-    version = "0.0.2"
+    version = "0.0.3"
     description = "Transport part of CWU protocol for cis1."
     author = "MokinIA <mia@tomsksoft.com>"
     settings = "os", "arch", "compiler", "build_type"
@@ -13,7 +13,7 @@ class Cis1CWUTransport(ConanFile):
     exports_sources = ["CMakeLists.txt", "include/*", "src/*"]
     requires = ("boost_system/1.69.0@bincrafters/stable",
                 "boost_asio/1.69.0@bincrafters/stable",
-                "cis1_proto_utils/0.0.2@tomsksoft/cis1")
+                "cis1_proto_utils/0.0.3@tomsksoft/cis1")
 
     def build(self):
         cmake = CMake(self)

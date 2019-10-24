@@ -1,5 +1,7 @@
 #include "ccwu_tcp_server.h"
 
+#include <cis1_proto_utils/cloexec.h>
+
 #include "queued_ccwu_session.h"
 
 namespace cis1
@@ -27,6 +29,16 @@ void tcp_server::listen(const tcp::endpoint& endpoint)
 {
     acceptor_.open(endpoint.protocol());
     acceptor_.set_option(boost::asio::ip::tcp::acceptor::reuse_address(true));
+
+    boost::system::error_code ec;
+
+    cis1::proto_utils::set_cloexec(acceptor_, ec);
+
+    if(ec)
+    {
+        throw ec;
+    }
+
     acceptor_.bind(endpoint);
     acceptor_.listen();
     start_accept();
@@ -46,6 +58,12 @@ void tcp_server::handle_accept(const boost::system::error_code& error)
 {
     if(!error)
     {
+        boost::system::error_code ec;
+
+        cis1::proto_utils::set_cloexec(acceptor_, ec);
+
+        //ignore error
+
         queued_session::accept_handler(
                     std::move(socket_),
                     session_acceptor_());
